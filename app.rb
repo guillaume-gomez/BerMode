@@ -4,6 +4,8 @@ require 'sinatra'
 require 'httparty'
 require 'byebug'
 
+require 'uri'
+
 require 'thread'
 
 require_relative 'app/slack_authorizer'
@@ -14,8 +16,9 @@ class BerMode < Sinatra::Base
 
   post '/slack/command' do
     username = params["user_name"]
-    contents = params["text"].split(" ")
-    channel = "Ber"
+    contents, channel_id = params["text"].split("|")
+    contents = contents.split(" ")
+    channel = channel_id ? URI.encode(channel_id.strip) : params["channel_id"]
     threads = []
     token = ENV["SLACK_API_TOKEN"]
     contents.each_with_index do |content, index|

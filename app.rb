@@ -13,23 +13,14 @@ use SlackAuthorizer
 class BerMode < Sinatra::Base
 
   post '/slack/command' do
-    response_url = params["response_url"]
     username = params["user_name"]
     contents = params["text"].split(" ")
-    
+    channel = "Ber"
     threads = []
+    token = ENV["SLACK_API_TOKEN"]
     contents.each_with_index do |content, index|
       return if content.empty?
-      options  = {
-        body: {
-          "response_type": "in_channel",
-          "text": content,
-          "username": username,
-        }.to_json,
-        headers: { 'Content-Type' => 'application/json' }
-      }
-      puts index
-      threads << Thread.new { sleep(index); HTTParty.post(response_url, options) }
+      threads << Thread.new { sleep(index * 0.4); result = HTTParty.get("https://slack.com/api/chat.postMessage?token=#{token}&channel=#{channel}&text=#{content}&username=#{username}&as_user=false&link_names=true"); puts result }
     end
     #threads.each(&:join)
     puts "end of function"

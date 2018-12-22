@@ -5,3 +5,5 @@ gem 'httparty'
 gem 'sinatra'
 gem 'dotenv'
 gem 'byebug'
+gem "rack"
+

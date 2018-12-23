@@ -36,4 +36,11 @@ class BerMode < Sinatra::Base
     ""
   end
 
+  get '/slack/users' do
+    token = ENV["SLACK_API_TOKEN"]
+    result = HTTParty.get("https://slack.com/api/users.list?token=#{token}")
+    filtered_result = JSON.parse(result.body)["members"].map{|data| data.slice("id", "name")}
+    filtered_result.to_json
+  end
+
 end

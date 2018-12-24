@@ -36,8 +36,20 @@ class BerMode < Sinatra::Base
 
   get '/slack/users' do
     token = ENV["SLACK_API_TOKEN"]
-    result = HTTParty.get("https://slack.com/api/users.list?token=#{token}")
-    @info_data = JSON.parse(result.body)["members"]
+    @info_data = []
+    cursor = ""
+    while cursor != nil do
+      result = HTTParty.get("https://slack.com/api/users.list?token=#{token}&cursor=#{cursor}")
+      payload = JSON.parse(result.body)
+      @info_data << payload["members"]
+      @info_data = @info_data.flatten
+      response_metadata = payload["response_metadata"]
+      if !response_metadata || response_metadata["next_cursor"] == ""
+        cursor = nil
+      else
+        cursor = response_metadata["next_cursor"]
+      end
+    end
     slim :'user_list'
   end
 

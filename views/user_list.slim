@@ -1,0 +1,13 @@
+h1 Users
+
+table
+  tr
+    th
+      | id
+    th
+      | name
+
+  - @info_data.each do |info|
+    tr
+      td = info["id"]
+      td = info["name"]

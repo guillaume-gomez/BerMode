@@ -1,12 +1,10 @@
 require 'dotenv/load'
 require 'sinatra'
-
+require 'slim'
+require 'uri'
+require 'thread'
 require 'httparty'
 require 'byebug'
-
-require 'uri'
-
-require 'thread'
 
 require_relative 'app/slack_authorizer'
 
@@ -39,8 +37,8 @@ class BerMode < Sinatra::Base
   get '/slack/users' do
     token = ENV["SLACK_API_TOKEN"]
     result = HTTParty.get("https://slack.com/api/users.list?token=#{token}")
-    filtered_result = JSON.parse(result.body)["members"].map{|data| data.slice("id", "name")}
-    filtered_result.to_json
+    @info_data = JSON.parse(result.body)["members"]
+    slim :'user_list'
   end
 
 end
